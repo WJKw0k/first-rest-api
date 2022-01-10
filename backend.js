@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const port = 5000;
 
-const users = { 
+let users = { 
     users_list :
     [
        { 
@@ -62,6 +62,15 @@ app.get('/users/:id', (req, res) => {
     }
 });
 
+app.delete('/users/:id', (req, res) => {
+    const userIdToDel = req.params['id'];
+    const result = deleteUser(userIdToDel);
+    if (result === undefined)
+        res.status(404).send("Could not find specified user to delete");
+    else
+        res.status(200).send();
+});
+
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
     addUser(userToAdd);
@@ -82,4 +91,12 @@ const findUserById = (id) => {
 
 function addUser(user) {
     users['users_list'].push(user);
+}
+
+function deleteUser(userId) {
+    const index = users['users_list'].findIndex(usr => usr['id'] === userId);
+    if (index < 0)
+        return undefined;
+    users['users_list'].splice(index, 1);
+    return index;
 }
