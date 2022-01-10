@@ -41,14 +41,22 @@ app.get('/', (req, res) => {
 
 app.get('/users', (req, res) => {
     const name = req.query.name;
-    if (name != undefined) {
+    const job = req.query.job;
+    if (name !== undefined && job !== undefined) {
+        let userByNameAndJob = findUserByIdAndJob(name, job);
+        if (userByNameAndJob === undefined || userByNameAndJob.length === 0) {
+            res.status(404).send("Resource with specified user Id and Job not found.");
+        } else {
+            userByNameAndJob = {users_list: userByNameAndJob};
+            res.send(userByNameAndJob);
+        }
+    } else if (name != undefined) {
         let result = findUserByName(name);
         result = {users_list: result};
         res.send(result)
     } else {
         res.send(users);
     }
-    res.send(users)
 });
 
 app.get('/users/:id', (req, res) => {
@@ -99,4 +107,8 @@ function deleteUser(userId) {
         return undefined;
     users['users_list'].splice(index, 1);
     return index;
+}
+
+const findUserByIdAndJob = (name, job) => {
+    return users['users_list'].filter( (user) => user['name'] === name && user['job'] === job);
 }
