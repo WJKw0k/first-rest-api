@@ -82,7 +82,7 @@ app.delete('/users/:id', (req, res) => {
 });
 
 app.post('/users', (req, res) => {
-    const userToAdd = req.body;
+    let userToAdd = req.body;
     addUser(userToAdd);
     res.status(201).end();
 });
@@ -100,6 +100,8 @@ const findUserById = (id) => {
 }
 
 function addUser(user) {
+    const time = Date.now().toString();
+    user['id'] = time;
     users['users_list'].push(user);
 }
 
