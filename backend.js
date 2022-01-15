@@ -76,15 +76,19 @@ app.delete('/users/:id', (req, res) => {
     const userIdToDel = req.params['id'];
     const result = deleteUser(userIdToDel);
     if (result === undefined)
-        res.status(404).send("Could not find specified user to delete");
+        res.status(404).send("Could not find specified user" + userIdToDel + " to delete");
     else
-        res.status(200).send();
+        res.status(204).send();
 });
 
 app.post('/users', (req, res) => {
-    let userToAdd = req.body;
-    addUser(userToAdd);
-    res.status(201).end();
+    const userToAdd = req.body;
+    if (userToAdd.name && userToAdd.job) {
+        const updatedUser = addUser(userToAdd);
+        res.status(201).send(updatedUser);
+    } else {
+        res.status(422).send("request empty");
+    }
 });
 
 app.listen(port, () => {
@@ -103,6 +107,7 @@ function addUser(user) {
     const time = Date.now().toString();
     user['id'] = time;
     users['users_list'].push(user);
+    return user;
 }
 
 function deleteUser(userId) {
